@@ -6,7 +6,6 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
             font-family: 'Segoe UI', sans-serif;
             height: 100vh;
             background: linear-gradient(135deg, #1aad19, #7ed957);
@@ -42,11 +41,6 @@
             border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 16px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #1aad19;
         }
 
         button {
@@ -55,23 +49,14 @@
             margin-top: 20px;
             background: #1aad19;
             border: none;
-            color: #fff;
+            color: white;
             font-size: 16px;
             border-radius: 8px;
             cursor: pointer;
         }
 
-        button:hover {
-            background: #148f14;
-        }
-
-        .or-text {
-            margin: 15px 0;
-            color: #999;
-            font-size: 13px;
-        }
-
         .register {
+            margin-top: 15px;
             font-size: 14px;
         }
 
@@ -80,58 +65,40 @@
             text-decoration: none;
             font-weight: bold;
         }
-
-        .footer {
-            font-size: 11px;
-            color: #777;
-            margin-top: 15px;
-        }
     </style>
 </head>
 
 <body>
 
-    <div class="login-card">
-        <h1>Farm To Home</h1>
-        <div class="tagline">Fresh vegetables directly from farmers</div>
+<div class="login-card">
+    <h1>Farm To Home</h1>
+    <div class="tagline">Fresh vegetables directly from farmers</div>
 
-        <input type="tel" placeholder="Enter Mobile Number" maxlength="10">
+    <input type="text" id="mobile" placeholder="Enter Mobile Number">
 
+    <button onclick="continueLogin()">Continue</button>
 
-       <button onclick="continueLogin()">Continue</button>
-
-
-        <div class="or-text">New user?</div>
-
-        <div class="register">
-            <a href="register.HTML">Register Here</a>
-        </div>
-
-        <div class="footer">
-            By continuing, you agree to our Terms & Privacy Policy
-        </div>
+    <div class="register">
+        New user? <a href="register.html">Register Here</a>
     </div>
+</div>
 
-
-
-
-	<script>
+<script>
 function continueLogin(){
-    let mobile = document.querySelector("input").value.trim();
+    let mobile = document.getElementById("mobile").value.trim();
 
-    if(mobile === ""){
-        alert("Enter mobile number");
+    if(mobile === "" || mobile.length < 10){
+        alert("Enter valid mobile number");
         return;
     }
 
-    // save logged-in user
-    localStorage.setItem("loggedInUser", mobile);
+    // save user session
+    localStorage.setItem("loggedInMobile", mobile);
 
+    // go to otp
     window.location.href = "otp.html";
 }
 </script>
 
-
 </body>
 </html>
-
