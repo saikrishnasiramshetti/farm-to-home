@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Farm To Home - Register</title>
+<title>Farm To Home - Login</title>
 
 <style>
 body{
@@ -14,17 +14,17 @@ body{
     align-items:center;
 }
 .card{
-    width:380px;
+    width:360px;
     background:white;
     padding:30px;
     border-radius:15px;
     text-align:center;
     box-shadow:0 15px 30px rgba(0,0,0,0.3);
 }
-input,textarea{
+input{
     width:100%;
     padding:14px;
-    margin-top:12px;
+    margin-top:15px;
     border-radius:8px;
     border:1px solid #ccc;
 }
@@ -39,7 +39,10 @@ button{
     border-radius:8px;
     cursor:pointer;
 }
-a{
+.link{
+    margin-top:15px;
+}
+.link a{
     color:#1aad19;
     font-weight:bold;
     text-decoration:none;
@@ -50,51 +53,44 @@ a{
 <body>
 
 <div class="card">
-    <h2>Create Account</h2>
+    <h2>Farm To Home</h2>
+    <p>Login with mobile number</p>
 
-    <input id="name" placeholder="Full Name">
-    <input id="mobile" placeholder="Mobile Number">
-    <textarea id="address" placeholder="Address"></textarea>
-    <input id="area" placeholder="City / Area">
+    <input type="text" id="mobile" placeholder="Enter Mobile Number">
 
-    <button onclick="registerUser()">Register</button>
+    <button onclick="checkUser()">Continue</button>
 
-    <p style="margin-top:15px;">
-        Already have an account? <a href="login.html">Login</a>
-    </p>
+    <div class="link" id="registerLink" style="display:none;">
+        New user? <a href="register.html">Register</a>
+    </div>
 </div>
 
 <script>
-function registerUser(){
-    let name = document.getElementById("name").value.trim();
+function checkUser(){
     let mobile = document.getElementById("mobile").value.trim();
-    let address = document.getElementById("address").value.trim();
-    let area = document.getElementById("area").value.trim();
 
-    if(name==="" || mobile==="" || address==="" || area===""){
-        alert("Fill all fields");
+    if(mobile.length !== 10){
+        alert("Enter valid 10 digit mobile number");
         return;
     }
 
     let users = JSON.parse(localStorage.getItem("users")) || [];
+    let existing = users.find(u => u.mobile === mobile);
 
-    let exists = users.find(u => u.mobile === mobile);
-    if(exists){
-        alert("You already have an account. Please login.");
-        window.location.href = "login.html";
-        return;
+    if(existing){
+        // Existing user → login
+        localStorage.setItem("loggedInMobile", mobile);
+
+        let otp = Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem("generatedOTP", otp);
+
+        alert("Your OTP is: " + otp);
+        window.location.href = "otp.html";
+    }else{
+        // New user → show register option
+        document.getElementById("registerLink").style.display = "block";
+        alert("New user detected. Please register first.");
     }
-
-    users.push({ name, mobile, address, area });
-    localStorage.setItem("users", JSON.stringify(users));
-
-    localStorage.setItem("loggedInMobile", mobile);
-
-    let otp = Math.floor(1000 + Math.random() * 9000);
-    localStorage.setItem("generatedOTP", otp);
-
-    alert("Your OTP is: " + otp);
-    window.location.href = "otp.html";
 }
 </script>
 
