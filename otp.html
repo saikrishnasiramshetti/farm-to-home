@@ -21,23 +21,43 @@ body{
     text-align:center;
     box-shadow:0 15px 30px rgba(0,0,0,0.3);
 }
-.otp input{
-    width:50px;
-    height:50px;
-    font-size:22px;
-    margin:5px;
+.otp-boxes{
+    display:flex;
+    justify-content:space-between;
+    margin:20px 0;
+}
+.otp-boxes input{
+    width:60px;
+    height:60px;
+    font-size:24px;
     text-align:center;
+    border-radius:8px;
+    border:1px solid #ccc;
 }
 button{
     width:100%;
     padding:14px;
-    margin-top:20px;
     background:#1aad19;
     border:none;
     color:white;
     font-size:16px;
     border-radius:8px;
     cursor:pointer;
+}
+.resend{
+    margin-top:15px;
+    font-size:14px;
+}
+.resend a{
+    color:#1aad19;
+    font-weight:bold;
+    text-decoration:none;
+    cursor:pointer;
+}
+#error{
+    color:red;
+    margin-top:10px;
+    font-size:14px;
 }
 </style>
 </head>
@@ -46,34 +66,96 @@ button{
 
 <div class="card">
     <h2>OTP Verification</h2>
-    <p>Enter 4-digit OTP</p>
+    <p>Enter the 4-digit OTP</p>
 
-    <div class="otp">
-        <input maxlength="1">
-        <input maxlength="1">
-        <input maxlength="1">
-        <input maxlength="1">
+    <div class="otp-boxes">
+        <input maxlength="1" onkeyup="moveNext(this,event)">
+        <input maxlength="1" onkeyup="moveNext(this,event)">
+        <input maxlength="1" onkeyup="moveNext(this,event)">
+        <input maxlength="1" onkeyup="moveNext(this,event)">
     </div>
 
     <button onclick="verifyOTP()">Verify OTP</button>
+
+    <div class="resend">
+        <span id="timer">Resend in 30s</span>
+        <a id="resendLink" onclick="resendOTP()" style="display:none;">Resend OTP</a>
+    </div>
+
+    <div id="error"></div>
 </div>
 
 <script>
+let generatedOTP = localStorage.getItem("generatedOTP");
+let timeLeft = 30;
+let timer;
+
+// START TIMER
+function startTimer(){
+    document.getElementById("resendLink").style.display = "none";
+    document.getElementById("timer").style.display = "inline";
+    timeLeft = 30;
+    document.getElementById("timer").innerText = "Resend in " + timeLeft + "s";
+
+    timer = setInterval(()=>{
+        timeLeft--;
+        document.getElementById("timer").innerText = "Resend in " + timeLeft + "s";
+
+        if(timeLeft <= 0){
+            clearInterval(timer);
+            document.getElementById("timer").style.display = "none";
+            document.getElementById("resendLink").style.display = "inline";
+        }
+    },1000);
+}
+
+// RESEND OTP
+function resendOTP(){
+    generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+    localStorage.setItem("generatedOTP", generatedOTP);
+
+    alert("Your new OTP is: " + generatedOTP);
+
+    document.querySelectorAll(".otp-boxes input").forEach(i => i.value = "");
+    document.getElementById("error").innerText = "";
+
+    startTimer();
+}
+
+// VERIFY OTP
 function verifyOTP(){
-    let inputs = document.querySelectorAll(".otp input");
     let entered = "";
+    document.querySelectorAll(".otp-boxes input").forEach(i=>{
+        entered += i.value;
+    });
 
-    inputs.forEach(i => entered += i.value);
+    if(entered.length < 4){
+        document.getElementById("error").innerText = "Please enter complete OTP";
+        return;
+    }
 
-    let correct = localStorage.getItem("generatedOTP");
-
-    if(entered === correct){
-        alert("Login successful");
+    if(entered === generatedOTP){
+        localStorage.removeItem("generatedOTP");
         window.location.href = "home.html";
     }else{
-        alert("Invalid OTP");
+        document.getElementById("error").innerText = "Invalid OTP";
     }
 }
+
+// AUTO MOVE CURSOR
+function moveNext(current,event){
+    if(current.value.length === 1 && event.key !== "Backspace"){
+        let next = current.nextElementSibling;
+        if(next) next.focus();
+    }
+    if(event.key === "Backspace" && current.value === ""){
+        let prev = current.previousElementSibling;
+        if(prev) prev.focus();
+    }
+}
+
+// INIT
+startTimer();
 </script>
 
 </body>
