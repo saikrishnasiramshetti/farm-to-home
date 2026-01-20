@@ -1,72 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Farm To Home - Login</title>
+    <title>Farm To Home - Login</title>
 
-<style>
-body{
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    height:100vh;
-    background:linear-gradient(135deg,#1aad19,#7ed957);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-.card{
-    width:360px;
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    text-align:center;
-    box-shadow:0 15px 30px rgba(0,0,0,0.3);
-}
-input{
-    width:100%;
-    padding:14px;
-    margin-top:15px;
-    border-radius:8px;
-    border:1px solid #ccc;
-}
-button{
-    width:100%;
-    padding:14px;
-    margin-top:20px;
-    background:#1aad19;
-    border:none;
-    color:white;
-    font-size:16px;
-    border-radius:8px;
-    cursor:pointer;
-}
-.link{
-    margin-top:15px;
-}
-.link a{
-    color:#1aad19;
-    font-weight:bold;
-    text-decoration:none;
-}
-</style>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #1aad19, #7ed957);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            width: 360px;
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        h1 {
+            color: #1aad19;
+            margin-bottom: 5px;
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: #1aad19;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .register {
+            margin-top: 15px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .register a {
+            color: #1aad19;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer {
+            font-size: 11px;
+            color: #777;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="card">
-    <h2>Farm To Home</h2>
-    <p>Login with mobile number</p>
+<div class="login-card">
+    <h1>Farm To Home</h1>
+    <div class="tagline">Fresh vegetables directly from farmers</div>
 
-    <input type="text" id="mobile" placeholder="Enter Mobile Number">
+    <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10">
 
-    <button onclick="checkUser()">Continue</button>
+    <button onclick="continueLogin()">Continue</button>
 
-    <div class="link" id="registerLink" style="display:none;">
-        New user? <a href="register.html">Register</a>
+    <div class="register" id="registerBox">
+        New user? <a href="register.html">Register Here</a>
+    </div>
+
+    <div class="footer">
+        By continuing, you agree to our Terms & Privacy Policy
     </div>
 </div>
 
 <script>
-function checkUser(){
+function continueLogin(){
     let mobile = document.getElementById("mobile").value.trim();
 
     if(mobile.length !== 10){
@@ -75,20 +104,20 @@ function checkUser(){
     }
 
     let users = JSON.parse(localStorage.getItem("users")) || [];
-    let existing = users.find(u => u.mobile === mobile);
+    let existingUser = users.find(u => u.mobile === mobile);
 
-    if(existing){
-        // Existing user → login
-        localStorage.setItem("loggedInMobile", mobile);
+    if(existingUser){
+        // EXISTING USER → OTP LOGIN
+        localStorage.setItem("loggedInUser", mobile);
 
         let otp = Math.floor(1000 + Math.random() * 9000);
         localStorage.setItem("generatedOTP", otp);
 
-        alert("Your OTP is: " + otp);
+        alert("Your OTP is: " + otp); // demo notification
         window.location.href = "otp.html";
     }else{
-        // New user → show register option
-        document.getElementById("registerLink").style.display = "block";
+        // NEW USER → SHOW REGISTER OPTION
+        document.getElementById("registerBox").style.display = "block";
         alert("New user detected. Please register first.");
     }
 }
