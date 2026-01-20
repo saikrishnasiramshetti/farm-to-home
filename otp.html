@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>OTP Verification</title>
+<title>Farm To Home - OTP Verification</title>
 
 <style>
 body{
@@ -10,16 +10,26 @@ body{
     height:100vh;
     background:linear-gradient(135deg,#1aad19,#7ed957);
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
 }
-.card{
-    background:white;
-    padding:30px;
-    border-radius:15px;
+.otp-card{
     width:360px;
+    background:white;
+    border-radius:18px;
+    padding:32px;
+    box-shadow:0 18px 35px rgba(0,0,0,0.3);
     text-align:center;
-    box-shadow:0 15px 30px rgba(0,0,0,0.3);
+}
+.logo{
+    font-size:26px;
+    font-weight:bold;
+    color:#1aad19;
+}
+.info{
+    font-size:14px;
+    color:#666;
+    margin-bottom:22px;
 }
 .otp-boxes{
     display:flex;
@@ -31,7 +41,7 @@ body{
     height:60px;
     font-size:24px;
     text-align:center;
-    border-radius:8px;
+    border-radius:10px;
     border:1px solid #ccc;
 }
 button{
@@ -41,32 +51,24 @@ button{
     border:none;
     color:white;
     font-size:16px;
-    border-radius:8px;
-    cursor:pointer;
+    border-radius:10px;
 }
 .resend{
-    margin-top:15px;
+    margin-top:16px;
     font-size:14px;
 }
 .resend a{
     color:#1aad19;
     font-weight:bold;
-    text-decoration:none;
-    cursor:pointer;
-}
-#error{
-    color:red;
-    margin-top:10px;
-    font-size:14px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-    <h2>OTP Verification</h2>
-    <p>Enter the 4-digit OTP</p>
+<div class="otp-card">
+    <div class="logo">Farm To Home 🌱</div>
+    <div class="info">Enter the 4-digit OTP sent to your mobile number</div>
 
     <div class="otp-boxes">
         <input maxlength="1" onkeyup="moveNext(this,event)">
@@ -77,84 +79,90 @@ button{
 
     <button onclick="verifyOTP()">Verify OTP</button>
 
+    <p id="error" style="color:red;"></p>
+
     <div class="resend">
+        Didn’t receive OTP?
         <span id="timer">Resend in 30s</span>
-        <a id="resendLink" onclick="resendOTP()" style="display:none;">Resend OTP</a>
+        <a href="#" id="resendLink" style="display:none;" onclick="resendOTP(event)">Resend</a>
     </div>
 
-    <div id="error"></div>
+    <p id="message" style="color:green;"></p>
 </div>
 
 <script>
+// ---------- OTP STORAGE (FIX) ----------
 let generatedOTP = localStorage.getItem("generatedOTP");
+
+if(!generatedOTP){
+    generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+    localStorage.setItem("generatedOTP", generatedOTP);
+
+    setTimeout(()=>{
+        alert("Your OTP is: " + generatedOTP);
+    },500);
+}
+
+// ---------- TIMER ----------
 let timeLeft = 30;
 let timer;
 
-// START TIMER
 function startTimer(){
-    document.getElementById("resendLink").style.display = "none";
-    document.getElementById("timer").style.display = "inline";
-    timeLeft = 30;
-    document.getElementById("timer").innerText = "Resend in " + timeLeft + "s";
+    document.getElementById("resendLink").style.display="none";
+    document.getElementById("timer").style.display="inline";
+    timeLeft=30;
+    document.getElementById("timer").innerText="Resend in "+timeLeft+"s";
 
-    timer = setInterval(()=>{
+    timer=setInterval(()=>{
         timeLeft--;
-        document.getElementById("timer").innerText = "Resend in " + timeLeft + "s";
-
-        if(timeLeft <= 0){
+        document.getElementById("timer").innerText="Resend in "+timeLeft+"s";
+        if(timeLeft<=0){
             clearInterval(timer);
-            document.getElementById("timer").style.display = "none";
-            document.getElementById("resendLink").style.display = "inline";
+            document.getElementById("timer").style.display="none";
+            document.getElementById("resendLink").style.display="inline";
         }
     },1000);
 }
 
-// RESEND OTP
-function resendOTP(){
-    generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+// ---------- RESEND OTP ----------
+function resendOTP(e){
+    e.preventDefault();
+    generatedOTP=Math.floor(1000 + Math.random() * 9000).toString();
     localStorage.setItem("generatedOTP", generatedOTP);
-
     alert("Your new OTP is: " + generatedOTP);
-
-    document.querySelectorAll(".otp-boxes input").forEach(i => i.value = "");
-    document.getElementById("error").innerText = "";
-
+    document.querySelectorAll(".otp-boxes input").forEach(i=>i.value="");
+    document.getElementById("message").innerText="OTP resent successfully ✔";
     startTimer();
 }
 
-// VERIFY OTP
+// ---------- VERIFY ----------
 function verifyOTP(){
-    let entered = "";
-    document.querySelectorAll(".otp-boxes input").forEach(i=>{
-        entered += i.value;
-    });
+    let entered="";
+    document.querySelectorAll(".otp-boxes input").forEach(i=>entered+=i.value);
 
-    if(entered.length < 4){
-        document.getElementById("error").innerText = "Please enter complete OTP";
+    if(entered.length<4){
+        document.getElementById("error").innerText="Enter complete OTP";
         return;
     }
 
-    if(entered === generatedOTP){
+    if(entered===generatedOTP){
         localStorage.removeItem("generatedOTP");
-        window.location.href = "home.html";
+        window.location.href="home.html";
     }else{
-        document.getElementById("error").innerText = "Invalid OTP";
+        document.getElementById("error").innerText="Invalid OTP";
     }
 }
 
-// AUTO MOVE CURSOR
+// ---------- AUTO MOVE ----------
 function moveNext(current,event){
-    if(current.value.length === 1 && event.key !== "Backspace"){
-        let next = current.nextElementSibling;
-        if(next) next.focus();
+    if(current.value && current.nextElementSibling){
+        current.nextElementSibling.focus();
     }
-    if(event.key === "Backspace" && current.value === ""){
-        let prev = current.previousElementSibling;
-        if(prev) prev.focus();
+    if(event.key==="Backspace" && current.previousElementSibling){
+        current.previousElementSibling.focus();
     }
 }
 
-// INIT
 startTimer();
 </script>
 
