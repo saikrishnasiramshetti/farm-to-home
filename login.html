@@ -1,101 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Farm To Home - Login</title>
+<title>Farm To Home - Login</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            height: 100vh;
-            background: linear-gradient(135deg, #1aad19, #7ed957);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-card {
-            width: 360px;
-            background: #ffffff;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-
-        h1 {
-            color: #1aad19;
-            margin-bottom: 5px;
-        }
-
-        .tagline {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            margin-top: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 20px;
-            background: #1aad19;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .register {
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .register a {
-            color: #1aad19;
-            text-decoration: none;
-            font-weight: bold;
-        }
-    </style>
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    height:100vh;
+    background:linear-gradient(135deg,#1aad19,#7ed957);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.card{
+    width:360px;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 15px 30px rgba(0,0,0,0.3);
+}
+input{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+button{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    background:#1aad19;
+    border:none;
+    color:white;
+    font-size:16px;
+    border-radius:8px;
+    cursor:pointer;
+}
+a{
+    color:#1aad19;
+    font-weight:bold;
+    text-decoration:none;
+}
+</style>
 </head>
 
 <body>
 
-<div class="login-card">
-    <h1>Farm To Home</h1>
-    <div class="tagline">Fresh vegetables directly from farmers</div>
+<div class="card">
+    <h2>Farm To Home</h2>
+    <p>Login with mobile number</p>
 
     <input type="text" id="mobile" placeholder="Enter Mobile Number">
 
-    <button onclick="continueLogin()">Continue</button>
+    <button onclick="goToOTP()">Continue</button>
 
-    <div class="register">
-        New user? <a href="register.html">Register Here</a>
-    </div>
+    <p style="margin-top:15px;">
+        New user? <a href="register.html">Register</a>
+    </p>
 </div>
 
 <script>
-function continueLogin(){
+function goToOTP(){
     let mobile = document.getElementById("mobile").value.trim();
 
-    if(mobile === "" || mobile.length < 10){
-        alert("Enter valid mobile number");
+    if(mobile.length !== 10){
+        alert("Enter valid 10 digit mobile number");
         return;
     }
 
-    // save user session
     localStorage.setItem("loggedInMobile", mobile);
 
-    // go to otp
+    // generate OTP
+    let otp = Math.floor(1000 + Math.random() * 9000);
+    localStorage.setItem("generatedOTP", otp);
+
+    alert("Your OTP is: " + otp); // demo purpose
+
     window.location.href = "otp.html";
 }
 </script>
