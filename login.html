@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Farm To Home - Login</title>
+<title>Farm To Home - Register</title>
 
 <style>
 body{
@@ -14,17 +14,17 @@ body{
     align-items:center;
 }
 .card{
-    width:360px;
+    width:380px;
     background:white;
     padding:30px;
     border-radius:15px;
     text-align:center;
     box-shadow:0 15px 30px rgba(0,0,0,0.3);
 }
-input{
+input,textarea{
     width:100%;
     padding:14px;
-    margin-top:15px;
+    margin-top:12px;
     border-radius:8px;
     border:1px solid #ccc;
 }
@@ -50,35 +50,50 @@ a{
 <body>
 
 <div class="card">
-    <h2>Farm To Home</h2>
-    <p>Login with mobile number</p>
+    <h2>Create Account</h2>
 
-    <input type="text" id="mobile" placeholder="Enter Mobile Number">
+    <input id="name" placeholder="Full Name">
+    <input id="mobile" placeholder="Mobile Number">
+    <textarea id="address" placeholder="Address"></textarea>
+    <input id="area" placeholder="City / Area">
 
-    <button onclick="goToOTP()">Continue</button>
+    <button onclick="registerUser()">Register</button>
 
     <p style="margin-top:15px;">
-        New user? <a href="register.html">Register</a>
+        Already have an account? <a href="login.html">Login</a>
     </p>
 </div>
 
 <script>
-function goToOTP(){
+function registerUser(){
+    let name = document.getElementById("name").value.trim();
     let mobile = document.getElementById("mobile").value.trim();
+    let address = document.getElementById("address").value.trim();
+    let area = document.getElementById("area").value.trim();
 
-    if(mobile.length !== 10){
-        alert("Enter valid 10 digit mobile number");
+    if(name==="" || mobile==="" || address==="" || area===""){
+        alert("Fill all fields");
         return;
     }
 
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    let exists = users.find(u => u.mobile === mobile);
+    if(exists){
+        alert("You already have an account. Please login.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    users.push({ name, mobile, address, area });
+    localStorage.setItem("users", JSON.stringify(users));
+
     localStorage.setItem("loggedInMobile", mobile);
 
-    // generate OTP
     let otp = Math.floor(1000 + Math.random() * 9000);
     localStorage.setItem("generatedOTP", otp);
 
-    alert("Your OTP is: " + otp); // demo purpose
-
+    alert("Your OTP is: " + otp);
     window.location.href = "otp.html";
 }
 </script>
