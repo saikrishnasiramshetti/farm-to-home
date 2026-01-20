@@ -1,165 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Farm To Home - Register</title>
+<title>Farm To Home - Register</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            height: 100vh;
-            background: linear-gradient(135deg, #1aad19, #7ed957);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .register-card {
-            width: 380px;
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 32px;
-            box-shadow: 0 18px 35px rgba(0,0,0,0.3);
-            text-align: center;
-            animation: fadeIn 0.6s ease;
-        }
-
-        @keyframes fadeIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-            color: #1aad19;
-            margin-bottom: 5px;
-        }
-
-        .tagline {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 25px;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 14px;
-            margin-top: 12px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-size: 15px;
-            outline: none;
-            resize: none;
-        }
-
-        input:focus, textarea:focus {
-            border-color: #1aad19;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 22px;
-            background: #1aad19;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #148f14;
-        }
-
-        .login-link {
-            margin-top: 18px;
-            font-size: 14px;
-        }
-
-        .login-link a {
-            color: #1aad19;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .footer {
-            font-size: 11px;
-            color: #777;
-            margin-top: 18px;
-        }
-    </style>
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    height:100vh;
+    background:linear-gradient(135deg,#1aad19,#7ed957);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.card{
+    width:380px;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 15px 30px rgba(0,0,0,0.3);
+}
+input,textarea{
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+button{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    background:#1aad19;
+    border:none;
+    color:white;
+    font-size:16px;
+    border-radius:8px;
+    cursor:pointer;
+}
+a{
+    color:#1aad19;
+    font-weight:bold;
+    text-decoration:none;
+}
+</style>
 </head>
 
 <body>
 
-    <div class="register-card">
-        <div class="logo">Farm To Home 🌱</div>
-        <div class="tagline">Create your account</div>
+<div class="card">
+    <h2>Create Account</h2>
 
-        <input type="text" placeholder="Full Name">
-        <input type="tel" placeholder="Mobile Number" maxlength="10">
-        <textarea rows="3" placeholder="Delivery Address"></textarea>
-        <input type="text" placeholder="City / Area">
+    <input id="name" placeholder="Full Name">
+    <input id="mobile" placeholder="Mobile Number">
+    <textarea id="address" placeholder="Address"></textarea>
+    <input id="area" placeholder="City / Area">
 
-        <button onclick="registerUser()">
-    Register
-</button>
+    <button onclick="registerUser()">Register</button>
 
-
-        <div class="login-link">
-            Already have an account?
-            <a href="login.html">Login</a>
-        </div>
-
-        <div class="footer">
-            By registering, you agree to our Terms & Privacy Policy
-        </div>
-    </div>
-
-
+    <p style="margin-top:15px;">
+        Already have an account? <a href="login.html">Login</a>
+    </p>
+</div>
 
 <script>
 function registerUser(){
-    let name = document.querySelector("input[placeholder='Full Name']").value.trim();
-    let mobile = document.querySelector("input[placeholder='Mobile Number']").value.trim();
-    let address = document.querySelector("textarea").value.trim();
-    let area = document.querySelector("input[placeholder='City / Area']").value.trim();
+    let name = document.getElementById("name").value.trim();
+    let mobile = document.getElementById("mobile").value.trim();
+    let address = document.getElementById("address").value.trim();
+    let area = document.getElementById("area").value.trim();
 
-    if(name === "" || mobile === "" || address === "" || area === ""){
-        alert("Please fill all details");
+    if(name==="" || mobile==="" || address==="" || area===""){
+        alert("Fill all fields");
         return;
     }
 
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // prevent duplicate users
     let exists = users.find(u => u.mobile === mobile);
     if(exists){
-        alert("User already registered");
+        alert("You already have an account. Please login.");
+        window.location.href = "login.html";
         return;
     }
 
-    let newUser = {
-        id: "U" + Date.now(),
-        name: name,
-        mobile: mobile,
-        address: address,
-        area: area,
-        registeredOn: new Date().toLocaleString()
-    };
-
-    users.push(newUser);
+    users.push({ name, mobile, address, area });
     localStorage.setItem("users", JSON.stringify(users));
 
-    // go to OTP page
+    localStorage.setItem("loggedInMobile", mobile);
+
+    let otp = Math.floor(1000 + Math.random() * 9000);
+    localStorage.setItem("generatedOTP", otp);
+
+    alert("Your OTP is: " + otp);
     window.location.href = "otp.html";
 }
 </script>
-
-	
 
 </body>
 </html>
