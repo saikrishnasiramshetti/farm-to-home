@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Farm To Home</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:#f4f7f5;
+    padding-bottom:130px;
+}
+
+/* HEADER */
+.header{
+    position:sticky;
+    top:0;
+    background:linear-gradient(135deg,#1aad19,#7ed957);
+    color:white;
+    padding:15px;
+    z-index:10;
+}
+.location{font-size:12px;opacity:0.9;}
+.title{font-size:22px;font-weight:bold;}
+.greet{font-size:14px;margin-top:4px;}
+
+/* SEARCH */
+.search-box{
+    background:white;
+    margin:15px;
+    padding:12px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.12);
+}
+.search-box input{
+    border:none;
+    outline:none;
+    width:100%;
+    font-size:15px;
+}
+
+/* CATEGORIES */
+.categories{
+    display:flex;
+    gap:10px;
+    padding:0 15px 10px;
+    overflow-x:auto;
+}
+.cat{
+    background:white;
+    padding:8px 16px;
+    border-radius:20px;
+    font-size:14px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    white-space:nowrap;
+}
+
+/* SECTION */
+.section-title{
+    margin:15px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+/* PRODUCT */
+.product{
+    background:white;
+    margin:12px 15px;
+    padding:15px;
+    border-radius:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 10px 18px rgba(0,0,0,0.12);
+}
+.left{
+    display:flex;
+    align-items:center;
+}
+.left img{
+    width:72px;
+    height:72px;
+    border-radius:12px;
+    margin-right:15px;
+}
+.info h4{margin:0;font-size:16px;}
+.info p{margin:4px 0;font-size:13px;color:#777;}
+.price{color:#1aad19;font-weight:bold;}
+
+/* QTY */
+.qty{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+.qty button{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    border:none;
+    background:#1aad19;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+.qty span{font-weight:bold;min-width:18px;text-align:center;}
+
+/* FLOATING CART */
+.cart-bar{
+    position:fixed;
+    bottom:65px;
+    left:50%;
+    transform:translateX(-50%);
+    width:90%;
+    background:#1aad19;
+    color:white;
+    padding:14px;
+    border-radius:18px;
+    text-align:center;
+    font-size:16px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.2);
+    display:none;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    padding:12px 0;
+    box-shadow:0 -4px 10px rgba(0,0,0,0.1);
+}
+.bottom-nav a{
+    text-decoration:none;
+    color:#1aad19;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="location" id="userInfo">📍 Welcome</div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="title">Farm To Home</div>
+        <button onclick="logoutUser()" style="
+            background:white;
+            color:#1aad19;
+            border:none;
+            padding:6px 12px;
+            border-radius:8px;
+            font-weight:bold;
+            cursor:pointer;">
+            Logout
+        </button>
+    </div>
+
+    <div class="greet">Fresh vegetables & fruits 🌱</div>
+</div>
+
+
+<!-- SEARCH -->
+<div class="search-box">
+    🔍 <input type="text" id="searchInput" placeholder="Search vegetables & fruits">
+</div>
+
+<!-- CATEGORIES -->
+<div class="categories">
+    <div class="cat">🥬 Vegetables</div>
+    <div class="cat">🍎 Fruits</div>
+    <div class="cat">🌾 Organic</div>
+    <div class="cat">🔥 Today Fresh</div>
+</div>
+
+<div class="section-title">Fresh Items</div>
+
+<div id="productList"></div>
+
+<!-- FLOATING CART -->
+<div class="cart-bar" id="cartBar" onclick="location.href='cart.html'">
+    🛒 View Cart
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+    <a href="home.html">🏠 Home</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="orders.html">📦 Orders</a>
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let products = JSON.parse(localStorage.getItem("items")) || [];
+
+const list = document.getElementById("productList");
+const cartBar = document.getElementById("cartBar");
+
+function safeId(name){
+    return name.replace(/\s+/g,"-");
+}
+
+function saveCart(){
+    localStorage.setItem("cart", JSON.stringify(cart));
+    cartBar.style.display = cart.length > 0 ? "block" : "none";
+}
+
+function getQty(name){
+    let item = cart.find(i => i.name === name);
+    return item ? item.qty : 0;
+}
+
+function renderProducts(arr){
+    list.innerHTML = "";
+
+    if(arr.length === 0){
+        list.innerHTML = `
+        <p style="text-align:center;color:#777;margin-top:40px;font-size:16px;">
+        No items found 🔍
+        </p>`;
+        return;
+    }
+
+    arr.forEach(p=>{
+        if(p.status !== "Available") return;
+
+        let id = safeId(p.name);
+
+        list.innerHTML += `
+        <div class="product">
+            <div class="left">
+                <img src="${p.img}">
+                <div class="info">
+                    <h4>${p.name}</h4>
+                    <p>1 kg</p>
+                    <div class="price">₹${p.price}</div>
+                </div>
+            </div>
+            <div class="qty">
+                <button onclick="dec('${p.name}',${p.price})">−</button>
+                <span id="qty-${id}">${getQty(p.name)}</span>
+                <button onclick="inc('${p.name}',${p.price})">+</button>
+            </div>
+        </div>`;
+    });
+}
+
+if(products.length === 0){
+    list.innerHTML = `
+    <p style="text-align:center;color:#777;margin-top:40px;font-size:16px;">
+    No items available today 🌱<br>Please check back later
+    </p>`;
+}else{
+    renderProducts(products);
+}
+
+function inc(name,price){
+    let item = cart.find(i=>i.name===name);
+    if(item){ item.qty++; }
+    else{ cart.push({name,price,qty:1}); }
+
+    document.getElementById("qty-"+safeId(name)).innerText =
+        cart.find(i=>i.name===name).qty;
+
+    saveCart();
+}
+
+function dec(name,price){
+    let item = cart.find(i=>i.name===name);
+    if(!item) return;
+
+    item.qty--;
+    if(item.qty===0){
+        cart = cart.filter(i=>i.name!==name);
+        document.getElementById("qty-"+safeId(name)).innerText = 0;
+    }else{
+        document.getElementById("qty-"+safeId(name)).innerText = item.qty;
+    }
+    saveCart();
+}
+
+document.getElementById("searchInput").addEventListener("keyup",function(){
+    let key=this.value.toLowerCase();
+    renderProducts(products.filter(p=>p.name.toLowerCase().includes(key)));
+});
+
+saveCart();
+
+
+// LOAD LOGGED-IN USER INFO
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let loggedMobile = localStorage.getItem("loggedInUser");
+
+if(loggedMobile){
+    let user = users.find(u => u.mobile === loggedMobile);
+    if(user){
+        document.getElementById("userInfo").innerText =
+            "📍 " + user.name + " (" + user.mobile + ")";
+    }
+}
+
+// LOGOUT
+function logoutUser(){
+    localStorage.removeItem("loggedInUser");
+    localStorage.removeItem("cart");
+    window.location.href = "login.html";
+}
+
+</script>
+
+</body>
+</html>

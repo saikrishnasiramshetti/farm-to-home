@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Farm To Home - OTP Verification</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    height:100vh;
+    background:linear-gradient(135deg,#1aad19,#7ed957);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.otp-card{
+    width:360px;
+    background:white;
+    border-radius:18px;
+    padding:32px;
+    box-shadow:0 18px 35px rgba(0,0,0,0.3);
+    text-align:center;
+    animation:fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+    from{transform:translateY(20px);opacity:0;}
+    to{transform:translateY(0);opacity:1;}
+}
+
+.logo{
+    font-size:26px;
+    font-weight:bold;
+    color:#1aad19;
+    margin-bottom:5px;
+}
+
+.info{
+    font-size:14px;
+    color:#666;
+    margin-bottom:22px;
+}
+
+.otp-boxes{
+    display:flex;
+    justify-content:space-between;
+    margin:20px 0;
+}
+
+.otp-boxes input{
+    width:60px;
+    height:60px;
+    font-size:24px;
+    text-align:center;
+    border-radius:10px;
+    border:1px solid #ccc;
+    outline:none;
+}
+
+.otp-boxes input:focus{
+    border-color:#1aad19;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    background:#1aad19;
+    border:none;
+    color:white;
+    font-size:16px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#148f14;
+}
+
+.resend{
+    margin-top:16px;
+    font-size:14px;
+    color:#555;
+}
+
+.resend a{
+    color:#1aad19;
+    text-decoration:none;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="otp-card">
+    <div class="logo">Farm To Home 🌱</div>
+    <div class="info">Enter the 4-digit OTP sent to your mobile number</div>
+
+    <div class="otp-boxes">
+        <input type="tel" maxlength="1" onkeyup="moveNext(this,event)">
+        <input type="tel" maxlength="1" onkeyup="moveNext(this,event)">
+        <input type="tel" maxlength="1" onkeyup="moveNext(this,event)">
+        <input type="tel" maxlength="1" onkeyup="moveNext(this,event)">
+    </div>
+
+    <button onclick="verifyOTP()">Verify OTP</button>
+
+    <p id="error" style="color:red;font-size:14px;margin-top:10px;"></p>
+
+    <div class="resend">
+        Didn’t receive OTP?
+        <span id="timer">Resend in 30s</span>
+        <a href="#" id="resendLink" style="display:none;" onclick="resendOTP(event)">Resend</a>
+    </div>
+
+    <p id="message" style="color:green;font-size:14px;margin-top:10px;"></p>
+</div>
+
+<script>
+// AUTO GENERATE 4-DIGIT OTP
+let generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+
+// SHOW OTP AS NOTIFICATION (SIMULATED SMS)
+setTimeout(() => {
+    alert("Your OTP is: " + generatedOTP);
+}, 500);
+
+// TIMER
+let timeLeft = 30;
+let timerInterval;
+
+function startTimer(){
+    document.getElementById("resendLink").style.display = "none";
+    document.getElementById("timer").style.display = "inline";
+    timeLeft = 30;
+    document.getElementById("timer").innerText = "Resend in " + timeLeft + "s";
+
+    timerInterval = setInterval(()=>{
+        timeLeft--;
+        document.getElementById("timer").innerText = "Resend in " + timeLeft + "s";
+
+        if(timeLeft <= 0){
+            clearInterval(timerInterval);
+            document.getElementById("timer").style.display = "none";
+            document.getElementById("resendLink").style.display = "inline";
+        }
+    },1000);
+}
+
+// RESEND OTP
+function resendOTP(e){
+    e.preventDefault();
+
+    generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+    alert("Your new OTP is: " + generatedOTP);
+
+    document.querySelectorAll(".otp-boxes input").forEach(i => i.value = "");
+    document.getElementById("error").innerText = "";
+    document.getElementById("message").innerText = "OTP resent successfully ✔";
+
+    startTimer();
+}
+
+// VERIFY OTP
+function verifyOTP(){
+    let enteredOTP = "";
+    document.querySelectorAll(".otp-boxes input").forEach(i => {
+        enteredOTP += i.value;
+    });
+
+    if(enteredOTP.length < 4){
+        document.getElementById("error").innerText = "Please enter complete OTP";
+        return;
+    }
+
+    if(enteredOTP === generatedOTP){
+        window.location.href = "home.html";
+    }else{
+        document.getElementById("error").innerText = "Invalid OTP. Please try again";
+    }
+}
+
+// AUTO MOVE INPUT
+function moveNext(current,event){
+    if(current.value.length === 1 && event.key !== "Backspace"){
+        let next = current.nextElementSibling;
+        if(next) next.focus();
+    }
+    if(event.key === "Backspace" && current.value === ""){
+        let prev = current.previousElementSibling;
+        if(prev) prev.focus();
+    }
+}
+
+window.onload = startTimer;
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login | Farm To Home</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#1aad19,#7ed957);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* LOGIN BOX */
+.box{
+    background:white;
+    width:360px;
+    padding:35px 30px;
+    border-radius:18px;
+    box-shadow:0 18px 35px rgba(0,0,0,0.3);
+    text-align:center;
+}
+
+h2{
+    color:#1aad19;
+    margin-bottom:5px;
+}
+.sub{
+    font-size:13px;
+    color:#666;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    margin-top:15px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:14px;
+    outline:none;
+}
+input:focus{
+    border-color:#1aad19;
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:13px;
+    margin-top:22px;
+    background:#1aad19;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+}
+button:hover{
+    background:#148f14;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Admin Login</h2>
+    <div class="sub">Farm To Home – Admin Panel</div>
+
+    <input id="user" placeholder="Admin Username">
+    <input id="pass" type="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+</div>
+
+<script>
+function login(){
+    let u = document.getElementById("user").value.trim().toLowerCase();
+    let p = document.getElementById("pass").value.trim();
+
+    if(u === "" || p === ""){
+        alert("Please enter admin credentials");
+        return;
+    }
+
+    // TEMP FRONTEND LOGIN (backend later)
+    if(u === "siramchetty saikrishna" && p === "SAI@2577"){
+        window.location.href = "admin-dashboard.html";
+    }else{
+        alert("Invalid admin credentials");
+    }
+}
+</script>
+
+</body>
+</html>

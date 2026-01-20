@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard | Farm To Home</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:#f5f7f6;
+}
+
+/* HEADER */
+.header{
+    background:#1aad19;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.logout{
+    background:white;
+    color:#1aad19;
+    border:none;
+    padding:6px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* CONTAINER */
+.container{
+    padding:20px;
+}
+
+/* CARD */
+.card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 8px 16px rgba(0,0,0,0.1);
+    margin-bottom:20px;
+}
+
+/* INPUTS */
+input, select{
+    width:100%;
+    padding:11px;
+    margin-top:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    outline:none;
+}
+input:focus, select:focus{
+    border-color:#1aad19;
+}
+
+/* BUTTONS */
+button{
+    margin-top:15px;
+    padding:10px 14px;
+    background:#1aad19;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+button:hover{
+    background:#148f14;
+}
+.btn-delete{
+    background:#e53935;
+}
+.btn-delete:hover{
+    background:#c62828;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+th, td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
+.available{color:green;font-weight:bold;}
+.out{color:red;font-weight:bold;}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div>Admin Dashboard – Farm To Home</div>
+
+    <div>
+        <button onclick="location.href='admin-orders.html'">📦 Orders</button>
+        <button onclick="location.href='admin-users.html'">👥 Users</button>
+        <button class="logout" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+
+
+<div class="container">
+
+<!-- ADD / UPDATE ITEM -->
+<div class="card">
+    <h3>Add / Update Item</h3>
+    <input id="name" placeholder="Vegetable / Fruit Name">
+    <input id="price" type="number" placeholder="Price per Kg">
+    <input id="img" placeholder="Image URL">
+    <select id="status">
+        <option value="Available">Available</option>
+        <option value="Out of Stock">Out of Stock</option>
+    </select>
+    <button onclick="addItem()">Save Item</button>
+</div>
+
+<!-- ITEM LIST -->
+<div class="card">
+    <h3>Today's Items</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="list"></tbody>
+    </table>
+</div>
+
+</div>
+
+<script>
+let items = JSON.parse(localStorage.getItem("items")) || [];
+const list = document.getElementById("list");
+
+function render(){
+    list.innerHTML="";
+    items.forEach((i,index)=>{
+        list.innerHTML += `
+        <tr>
+            <td>
+                <img src="${i.img}" width="40" style="border-radius:6px"><br>
+                ${i.name}
+            </td>
+            <td>₹${i.price}</td>
+            <td class="${i.status==='Available'?'available':'out'}">${i.status}</td>
+            <td>
+                <button onclick="editItem(${index})">Edit</button>
+                <button class="btn-delete" onclick="removeItem(${index})">Delete</button>
+            </td>
+        </tr>`;
+    });
+    localStorage.setItem("items", JSON.stringify(items));
+}
+
+function addItem(){
+    let name = document.getElementById("name").value.trim();
+    let price = Number(document.getElementById("price").value);
+    let img = document.getElementById("img").value.trim();
+    let status = document.getElementById("status").value;
+
+    if(name==="" || !price || img===""){
+        alert("Please fill all fields correctly");
+        return;
+    }
+
+    let editIndex = localStorage.getItem("editIndex");
+
+    if(editIndex !== null){
+        items[editIndex] = {name, price, img, status};
+        localStorage.removeItem("editIndex");
+    }else{
+        items.push({name, price, img, status});
+    }
+
+    document.getElementById("name").value="";
+    document.getElementById("price").value="";
+    document.getElementById("img").value="";
+
+    render();
+}
+
+function removeItem(index){
+    if(confirm("Delete this item?")){
+        items.splice(index,1);
+        render();
+    }
+}
+
+function editItem(index){
+    let i = items[index];
+    document.getElementById("name").value=i.name;
+    document.getElementById("price").value=i.price;
+    document.getElementById("img").value=i.img;
+    document.getElementById("status").value=i.status;
+    localStorage.setItem("editIndex", index);
+}
+
+function logout(){
+    window.location.href="admin-login.html";
+}
+
+render();
+</script>
+
+</body>
+</html>
