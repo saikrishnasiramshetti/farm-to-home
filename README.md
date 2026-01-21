@@ -5,4 +5,4 @@ Farm To Home Vegetable Delivery App
 © 2026 Saikrishna Siramchetty. All Rights Reserved.
 
 This project is published on GitHub for educational and demonstration purposes only.
-Unauthorized copying or reuse of this project is strictly prohibited.
+Unauthorized copying or reuse of this project is strictly prohibited.  
